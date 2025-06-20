@@ -32,11 +32,23 @@ export class BookMatcher {
       }
     }
 
-    // Cコードの前方一致チェック
+    // Cコードのマッチングチェック
     if (criteria.ccode && criteria.ccode.trim() !== '') {
       const ccode = this.getCcode(book);
-      if (!ccode.startsWith(criteria.ccode)) {
-        return false;
+      const matchType = criteria.ccodeMatchType || 'prefix';
+      
+      if (matchType === 'exact') {
+        if (ccode !== criteria.ccode) {
+          return false;
+        }
+      } else if (matchType === 'prefix') {
+        if (!ccode.startsWith(criteria.ccode)) {
+          return false;
+        }
+      } else if (matchType === 'suffix') {
+        if (!ccode.endsWith(criteria.ccode)) {
+          return false;
+        }
       }
     }
 

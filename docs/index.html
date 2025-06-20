@@ -116,8 +116,15 @@
             
             <div class="form-group">
                 <label for="ccode">Cコード</label>
-                <input type="text" id="ccode" name="ccode">
-                <div class="help-text">前方一致で検索（例：00で始まるコード）</div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="ccode" name="ccode" style="flex: 1;">
+                    <select id="ccodeMatchType" name="ccodeMatchType" style="width: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="prefix">前方一致</option>
+                        <option value="exact">完全一致</option>
+                        <option value="suffix">後方一致</option>
+                    </select>
+                </div>
+                <div class="help-text">Cコードの検索方法を選択してください</div>
             </div>
             
             <button type="submit">フィードを作成</button>
@@ -179,7 +186,11 @@
             if (criteria.seriesName) parts.push(`シリーズ: ${criteria.seriesName}`);
             if (criteria.titleKeyword) parts.push(`書名: ${criteria.titleKeyword}`);
             if (criteria.publisher) parts.push(`出版社: ${criteria.publisher}`);
-            if (criteria.ccode) parts.push(`Cコード: ${criteria.ccode}`);
+            if (criteria.ccode) {
+                const matchTypeText = criteria.ccodeMatchType === 'exact' ? '完全一致' : 
+                                    criteria.ccodeMatchType === 'suffix' ? '後方一致' : '前方一致';
+                parts.push(`Cコード: ${criteria.ccode} (${matchTypeText})`);
+            }
             return parts.length > 0 ? parts.join(', ') : '条件なし';
         }
         
@@ -212,6 +223,7 @@
 書名キーワード: ${feedData.titleKeyword || '(なし)'}
 発行元出版社: ${feedData.publisher || '(なし)'}
 Cコード: ${feedData.ccode || '(なし)'}
+Cコード検索方法: ${feedData.ccodeMatchType || 'prefix'}
 
 このイシューは自動的に処理されます。`,
                         labels: ['feed-request']

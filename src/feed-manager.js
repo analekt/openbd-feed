@@ -30,7 +30,8 @@ export class FeedManager {
         seriesName: feedRequest.seriesName || '',
         titleKeyword: feedRequest.titleKeyword || '',
         publisher: feedRequest.publisher || '',
-        ccode: feedRequest.ccode || ''
+        ccode: feedRequest.ccode || '',
+        ccodeMatchType: feedRequest.ccodeMatchType || 'prefix'
       },
       createdAt: new Date().toISOString(),
       lastUpdated: null,
@@ -208,6 +209,9 @@ export class FeedManager {
       } else if (trimmed.startsWith('Cコード:')) {
         const value = trimmed.replace('Cコード:', '').trim();
         feedRequest.ccode = value === '(なし)' ? '' : value;
+      } else if (trimmed.startsWith('Cコード検索方法:')) {
+        const value = trimmed.replace('Cコード検索方法:', '').trim();
+        feedRequest.ccodeMatchType = value || 'prefix';
       }
     }
 
