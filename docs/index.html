@@ -207,16 +207,18 @@
                 return;
             }
             
-            try {
-                // GitHub APIを使用してフィード作成リクエストを送信
-                const response = await fetch('https://api.github.com/repos/analekt/opendb-feed/issues', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        title: `新しいフィード作成リクエスト: ${feedData.feedName}`,
-                        body: `フィード作成リクエスト
+            // GitHub Issueによる手動作成方法を案内
+            showManualCreationGuide(feedData);
+        });
+        
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+        }
+        
+        function showManualCreationGuide(feedData) {
+            const issueBody = `フィード作成リクエスト
 
 フィード名: ${feedData.feedName}
 シリーズ名/レーベル名: ${feedData.seriesName || '(なし)'}
@@ -225,37 +227,25 @@
 Cコード: ${feedData.ccode || '(なし)'}
 Cコード検索方法: ${feedData.ccodeMatchType || 'prefix'}
 
-このイシューは自動的に処理されます。`,
-                        labels: ['feed-request']
-                    })
-                });
-                
-                if (response.ok) {
-                    // 仮のフィードIDを生成
-                    const feedId = Date.now().toString(36) + Math.random().toString(36).substr(2);
-                    const feedUrl = `https://analekt.github.io/opendb-feed/feeds/${feedId}.xml`;
-                    
-                    document.getElementById('feedUrl').textContent = feedUrl;
-                    document.getElementById('result').style.display = 'block';
-                    document.getElementById('error').style.display = 'none';
-                    
-                    // フォームをリセット
-                    e.target.reset();
-                    
-                    // フィードリストを再読み込み
-                    setTimeout(loadExistingFeeds, 2000);
-                } else {
-                    showError('フィードの作成に失敗しました。しばらく時間をおいて再試行してください。');
-                }
-            } catch (error) {
-                showError('フィードの作成に失敗しました。しばらく時間をおいて再試行してください。');
-            }
-        });
-        
-        function showError(message) {
-            document.getElementById('errorMessage').textContent = message;
-            document.getElementById('error').style.display = 'block';
-            document.getElementById('result').style.display = 'none';
+このイシューは自動的に処理されます。`;
+            
+            const issueUrl = `https://github.com/analekt/opendb-feed/issues/new?title=${encodeURIComponent('新しいフィード作成リクエスト: ' + feedData.feedName)}&body=${encodeURIComponent(issueBody)}&labels=feed-request`;
+            
+            // 新しいタブでGitHub Issueページを開く
+            window.open(issueUrl, '_blank');
+            
+            document.getElementById('result').innerHTML = `
+                <strong>フィード作成リクエストを送信しました！</strong><br><br>
+                GitHub Issueページが新しいタブで開きました。<br>
+                そのページで「Submit new issue」ボタンをクリックしてください。<br><br>
+                フィードは数分以内に自動作成され、以下で確認できます：<br>
+                <a href="https://analekt.github.io/opendb-feed/" target="_blank">フィード一覧ページ</a>
+            `;
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            
+            // フォームをリセット
+            document.getElementById('feedForm').reset();
         }
         
         // ページ読み込み時に既存フィードを表示
