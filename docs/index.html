@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenBD新刊フィード作成サービス</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .form-container {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .feed-url {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            word-break: break-all;
+            display: none;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .existing-feeds {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .feed-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>OpenBD新刊フィード作成サービス</h1>
+    
+    <p>OpenBDから新刊情報を取得するRSSフィードを作成できます。条件を入力して、あなた専用のフィードを作成しましょう。</p>
+    
+    <div class="form-container">
+        <h2>新しいフィードを作成</h2>
+        <form id="feedForm">
+            <div class="form-group">
+                <label for="feedName">フィード名 *</label>
+                <input type="text" id="feedName" name="feedName" required>
+                <div class="help-text">あなたのフィードを識別するための名前</div>
+            </div>
+            
+            
+            <div class="form-group">
+                <label for="seriesName">シリーズ名/レーベル名</label>
+                <input type="text" id="seriesName" name="seriesName">
+                <div class="help-text">完全一致で検索（空欄の場合は条件なし）</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="titleKeyword">書名キーワード</label>
+                <input type="text" id="titleKeyword" name="titleKeyword">
+                <div class="help-text">書名に含まれるキーワード（部分一致）</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="publisher">発行元出版社</label>
+                <input type="text" id="publisher" name="publisher">
+                <div class="help-text">完全一致で検索（空欄の場合は条件なし）</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="ccode">Cコード</label>
+                <input type="text" id="ccode" name="ccode">
+                <div class="help-text">完全一致で検索（例：0095）</div>
+            </div>
+            
+            <button type="submit">フィードを作成</button>
+        </form>
+        
+        <div id="result" class="feed-url">
+            <strong>フィードURL:</strong> <span id="feedUrl"></span>
+            <br><br>
+            このURLをRSSリーダーに追加してください。
+        </div>
+        
+        <div id="error" class="error">
+            <span id="errorMessage"></span>
+        </div>
+    </div>
+    
+    <h2>使用方法</h2>
+    <ul>
+        <li>フィード名と検索条件を入力してフィードを作成</li>
+        <li>生成されたURLをRSSリーダーに登録</li>
+        <li>毎日午前4時に自動更新</li>
+        <li>条件に一致する新刊が見つかるとフィードに追加</li>
+    </ul>
+    
+    <div class="existing-feeds">
+        <h2>これまでユーザーが作成したフィード</h2>
+        <div id="feedList">
+            <p>読み込み中...</p>
+        </div>
+    </div>
+    
+    <script>
+        // 既存フィードの読み込み
+        async function loadExistingFeeds() {
+            try {
+                const response = await fetch('./feeds/index.json');
+                const feeds = await response.json();
+                
+                const feedListElement = document.getElementById('feedList');
+                if (feeds.length === 0) {
+                    feedListElement.innerHTML = '<p>まだフィードがありません。</p>';
+                    return;
+                }
+                
+                feedListElement.innerHTML = feeds.map(feed => `
+                    <div class="feed-item">
+                        <strong>${feed.name}</strong><br>
+                        <small>条件: ${formatCriteria(feed.criteria)}</small><br>
+                        <a href="./feeds/${feed.id}.xml" target="_blank">RSS URL</a>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('feedList').innerHTML = '<p>フィードの読み込みに失敗しました。</p>';
+            }
+        }
+        
+        function formatCriteria(criteria) {
+            const parts = [];
+            if (criteria.seriesName) parts.push(`シリーズ: ${criteria.seriesName}`);
+            if (criteria.titleKeyword) parts.push(`書名: ${criteria.titleKeyword}`);
+            if (criteria.publisher) parts.push(`出版社: ${criteria.publisher}`);
+            if (criteria.ccode) parts.push(`Cコード: ${criteria.ccode}`);
+            return parts.length > 0 ? parts.join(', ') : '条件なし';
+        }
+        
+        // フォーム送信処理
+        document.getElementById('feedForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const feedData = Object.fromEntries(formData);
+            
+            // 最低限の条件チェック
+            if (!feedData.seriesName && !feedData.titleKeyword && !feedData.publisher && !feedData.ccode) {
+                showError('少なくとも一つの検索条件を入力してください。');
+                return;
+            }
+            
+            try {
+                // GitHub APIを使用してフィード作成リクエストを送信
+                const response = await fetch('https://api.github.com/repos/analekt/opendb-feed/issues', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: `新しいフィード作成リクエスト: ${feedData.feedName}`,
+                        body: `フィード作成リクエスト
+
+フィード名: ${feedData.feedName}
+シリーズ名/レーベル名: ${feedData.seriesName || '(なし)'}
+書名キーワード: ${feedData.titleKeyword || '(なし)'}
+発行元出版社: ${feedData.publisher || '(なし)'}
+Cコード: ${feedData.ccode || '(なし)'}
+
+このイシューは自動的に処理されます。`,
+                        labels: ['feed-request']
+                    })
+                });
+                
+                if (response.ok) {
+                    // 仮のフィードIDを生成
+                    const feedId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                    const feedUrl = `https://analekt.github.io/opendb-feed/feeds/${feedId}.xml`;
+                    
+                    document.getElementById('feedUrl').textContent = feedUrl;
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('error').style.display = 'none';
+                    
+                    // フォームをリセット
+                    e.target.reset();
+                    
+                    // フィードリストを再読み込み
+                    setTimeout(loadExistingFeeds, 2000);
+                } else {
+                    showError('フィードの作成に失敗しました。しばらく時間をおいて再試行してください。');
+                }
+            } catch (error) {
+                showError('フィードの作成に失敗しました。しばらく時間をおいて再試行してください。');
+            }
+        });
+        
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+        }
+        
+        // ページ読み込み時に既存フィードを表示
+        loadExistingFeeds();
+    </script>
+</body>
+</html>

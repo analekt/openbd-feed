@@ -1,0 +1,15 @@
+{
+  "name": "opendb-feed",
+  "version": "1.0.0",
+  "description": "RSS feed generator for OpenBD book database",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "build": "node src/generate-feed.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "rss": "^1.2.2"
+  },
+  "type": "module"
+}
