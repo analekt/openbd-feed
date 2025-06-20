@@ -32,10 +32,10 @@ export class BookMatcher {
       }
     }
 
-    // Cコードの完全一致チェック
+    // Cコードの前方一致チェック
     if (criteria.ccode && criteria.ccode.trim() !== '') {
       const ccode = this.getCcode(book);
-      if (ccode !== criteria.ccode) {
+      if (!ccode.startsWith(criteria.ccode)) {
         return false;
       }
     }
