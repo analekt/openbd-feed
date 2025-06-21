@@ -84,7 +84,8 @@
 <body>
     <h1>OpenBD新刊フィード作成サービス</h1>
     
-    <p>書誌情報や書影情報を提供している<a href="https://openbd.jp/" target="_blank">OpenBD</a>を活用し、新刊情報を取得するRSSフィードを作成できます。条件を入力して、あなた専用のフィードを作成しましょう。このプログラムは<a href="https://claude.ai/" target="_blank">Claude</a>a Codeによって生成されたものです。</p>
+    <p>書誌情報や書影情報を提供している<a href="https://openbd.jp/" target="_blank">OpenBD</a>を活用し、新刊情報を取得するRSSフィードを作成できます。条件を入力して、あなた専用のフィードを作成しましょう。</p>
+    
     
     <div class="form-container">
         <h2>新しいフィードを作成</h2>
@@ -207,8 +208,8 @@
                 return;
             }
             
-            // GitHub Issueによる手動作成方法を案内
-            showManualCreationGuide(feedData);
+            // 外部フォームサービスを使用してフィード作成
+            submitToFormService(feedData);
         });
         
         function showError(message) {
@@ -217,7 +218,123 @@
             document.getElementById('result').style.display = 'none';
         }
         
-        function showManualCreationGuide(feedData) {
+        async function submitToFormService(feedData) {
+            try {
+                // Formspreeを使用してフォーム送信（GitHubアカウント不要）
+                const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        feedName: feedData.feedName,
+                        seriesName: feedData.seriesName || '',
+                        titleKeyword: feedData.titleKeyword || '',
+                        publisher: feedData.publisher || '',
+                        ccode: feedData.ccode || '',
+                        ccodeMatchType: feedData.ccodeMatchType || 'prefix',
+                        timestamp: new Date().toISOString(),
+                        requestType: 'feed-creation'
+                    })
+                });
+                
+                if (response.ok) {
+                    // 成功時
+                    document.getElementById('result').innerHTML = `
+                        <strong>✅ フィード作成リクエストを受け付けました！</strong><br><br>
+                        <div style="background: #d4edda; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                            <h4>📋 処理状況</h4>
+                            <p><strong>フィード名:</strong> ${feedData.feedName}</p>
+                            <p><strong>ステータス:</strong> リクエスト受付完了</p>
+                            <p><strong>処理予定:</strong> 1-2日以内に作成</p>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                            <h4>🔍 確認方法</h4>
+                            <p>フィードが作成されると、<a href="https://analekt.github.io/opendb-feed/" target="_blank" style="color: #007bff;">フィード一覧ページ</a>に表示されます。</p>
+                            <p>作成完了後、以下のような形式でアクセスできます：<br>
+                            <code style="background: #e9ecef; padding: 2px 4px; border-radius: 3px;">https://analekt.github.io/opendb-feed/feeds/[フィードID].xml</code></p>
+                        </div>
+                        
+                        <p style="font-size: 14px; color: #666;">
+                            ※ このサービスはアカウント登録不要でご利用いただけます
+                        </p>
+                    `;
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('error').style.display = 'none';
+                    
+                    // フォームをリセット
+                    document.getElementById('feedForm').reset();
+                    
+                } else {
+                    throw new Error('フォーム送信に失敗しました');
+                }
+                
+            } catch (error) {
+                console.error('Form service error:', error);
+                // フォールバック: メール送信
+                showEmailFallback(feedData);
+            }
+        }
+        
+        function showEmailFallback(feedData) {
+            const subject = encodeURIComponent(`新刊フィード作成リクエスト: ${feedData.feedName}`);
+            const body = encodeURIComponent(`フィード作成リクエスト
+
+フィード名: ${feedData.feedName}
+シリーズ名/レーベル名: ${feedData.seriesName || '(なし)'}
+書名キーワード: ${feedData.titleKeyword || '(なし)'}
+発行元出版社: ${feedData.publisher || '(なし)'}
+Cコード: ${feedData.ccode || '(なし)'}
+Cコード検索方法: ${feedData.ccodeMatchType || 'prefix'}
+
+作成日時: ${new Date().toLocaleString('ja-JP')}
+
+このリクエストの処理をお願いします。`);
+            
+            const mailtoUrl = `mailto:opendb-feed@example.com?subject=${subject}&body=${body}`;
+            
+            document.getElementById('result').innerHTML = `
+                <strong>📧 メールでリクエストを送信</strong><br><br>
+                <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                    <h4>📋 送信方法</h4>
+                    <p>自動送信ができませんでした。以下のボタンをクリックしてメールアプリでリクエストを送信してください。</p>
+                    <button onclick="window.location.href='${mailtoUrl}'" style="background: #ffc107; color: black; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">
+                        📧 メールアプリで送信
+                    </button>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                    <h4>✉️ 手動送信の場合</h4>
+                    <p><strong>送信先:</strong> opendb-feed@example.com</p>
+                    <p><strong>件名:</strong> 新刊フィード作成リクエスト: ${feedData.feedName}</p>
+                    <p><strong>本文:</strong> 以下をコピーしてお送りください</p>
+                    <textarea readonly style="width: 100%; height: 150px; margin-top: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">フィード作成リクエスト
+
+フィード名: ${feedData.feedName}
+シリーズ名/レーベル名: ${feedData.seriesName || '(なし)'}
+書名キーワード: ${feedData.titleKeyword || '(なし)'}
+発行元出版社: ${feedData.publisher || '(なし)'}
+Cコード: ${feedData.ccode || '(なし)'}
+Cコード検索方法: ${feedData.ccodeMatchType || 'prefix'}
+
+作成日時: ${new Date().toLocaleString('ja-JP')}
+
+このリクエストの処理をお願いします。</textarea>
+                </div>
+                
+                <p style="font-size: 14px; color: #666;">
+                    フィードは1-2日以内に作成され、<a href="https://analekt.github.io/opendb-feed/" target="_blank">フィード一覧ページ</a>で確認できます。
+                </p>
+            `;
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            
+            // フォームをリセット
+            document.getElementById('feedForm').reset();
+        }
+        
+        function showSubmissionOptions(feedData) {
             const issueBody = `フィード作成リクエスト
 
 フィード名: ${feedData.feedName}
@@ -227,25 +344,61 @@
 Cコード: ${feedData.ccode || '(なし)'}
 Cコード検索方法: ${feedData.ccodeMatchType || 'prefix'}
 
-このイシューは自動的に処理されます。`;
+このリクエストは自動的に処理されます。`;
             
             const issueUrl = `https://github.com/analekt/opendb-feed/issues/new?title=${encodeURIComponent('新しいフィード作成リクエスト: ' + feedData.feedName)}&body=${encodeURIComponent(issueBody)}&labels=feed-request`;
             
-            // 新しいタブでGitHub Issueページを開く
-            window.open(issueUrl, '_blank');
+            // Google Formsの事前入力URL（実際のフォームIDに置き換える必要があります）
+            const googleFormUrl = `https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform?usp=pp_url&entry.FEED_NAME=${encodeURIComponent(feedData.feedName)}&entry.SERIES_NAME=${encodeURIComponent(feedData.seriesName || '')}&entry.TITLE_KEYWORD=${encodeURIComponent(feedData.titleKeyword || '')}&entry.PUBLISHER=${encodeURIComponent(feedData.publisher || '')}&entry.CCODE=${encodeURIComponent(feedData.ccode || '')}&entry.MATCH_TYPE=${encodeURIComponent(feedData.ccodeMatchType || 'prefix')}`;
             
             document.getElementById('result').innerHTML = `
-                <strong>フィード作成リクエストを送信しました！</strong><br><br>
-                GitHub Issueページが新しいタブで開きました。<br>
-                そのページで「Submit new issue」ボタンをクリックしてください。<br><br>
-                フィードは数分以内に自動作成され、以下で確認できます：<br>
-                <a href="https://analekt.github.io/opendb-feed/" target="_blank">フィード一覧ページ</a>
+                <strong>フィード作成方法を選択してください</strong><br><br>
+                
+                <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+                    <h4>🚀 方法1: GitHub アカウントを使用（推奨・最速）</h4>
+                    <p>GitHubアカウントをお持ちの場合、この方法が最も高速です。</p>
+                    <button onclick="window.open('${issueUrl}', '_blank')" style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">GitHub Issue で作成</button>
+                </div>
+                
+                <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+                    <h4>📝 方法2: Google フォーム（GitHubアカウント不要）</h4>
+                    <p>GitHubアカウントをお持ちでない場合はこちらをご利用ください。</p>
+                    <button onclick="window.open('${googleFormUrl}', '_blank')" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Google フォーム で作成</button>
+                </div>
+                
+                <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+                    <h4>✉️ 方法3: メール送信</h4>
+                    <p>上記が利用できない場合、メールでご連絡ください。</p>
+                    <button onclick="sendEmail('${feedData.feedName}', '${feedData.seriesName || ''}', '${feedData.titleKeyword || ''}', '${feedData.publisher || ''}', '${feedData.ccode || ''}', '${feedData.ccodeMatchType || 'prefix'}')" style="background: #ffc107; color: black; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">メールで送信</button>
+                </div>
+                
+                <p style="font-size: 14px; color: #666;">
+                    どの方法を選択されても、フィードは1-2日以内に作成され、
+                    <a href="https://analekt.github.io/opendb-feed/" target="_blank">フィード一覧ページ</a>で確認できます。
+                </p>
             `;
             document.getElementById('result').style.display = 'block';
             document.getElementById('error').style.display = 'none';
             
             // フォームをリセット
             document.getElementById('feedForm').reset();
+        }
+        
+        function sendEmail(feedName, seriesName, titleKeyword, publisher, ccode, matchType) {
+            const subject = encodeURIComponent(`新刊フィード作成リクエスト: ${feedName}`);
+            const body = encodeURIComponent(`フィード作成リクエスト
+
+フィード名: ${feedName}
+シリーズ名/レーベル名: ${seriesName || '(なし)'}
+書名キーワード: ${titleKeyword || '(なし)'}
+発行元出版社: ${publisher || '(なし)'}
+Cコード: ${ccode || '(なし)'}
+Cコード検索方法: ${matchType}
+
+このリクエストの処理をお願いします。`);
+            
+            const mailtoUrl = `mailto:feed-request@example.com?subject=${subject}&body=${body}`;
+            window.location.href = mailtoUrl;
         }
         
         // ページ読み込み時に既存フィードを表示
