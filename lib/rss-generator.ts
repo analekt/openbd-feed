@@ -16,7 +16,7 @@ export class RSSGenerator {
     <language>ja</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="https://bookfeed.vercel.app/api/feeds/${feed.id}" rel="self" type="application/rss+xml"/>
-    <generator>New Book RSS Generator v3.0</generator>
+    <generator>Book Feed Generator v3.0</generator>
     
 ${items.map(item => this.formatRSSItem(item)).join('\n')}
   </channel>

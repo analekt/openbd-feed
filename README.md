@@ -1,4 +1,4 @@
-# New Book RSS Generator v3.0
+# Book Feed Generator v3.0
 
 RSS feed distribution service for new book information using OpenBD API - TypeScript & Vercel Edition
 

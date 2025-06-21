@@ -1,8 +1,8 @@
-# New Book RSS Generator v3.0 - プロジェクト情報
+# Book Feed Generator v3.0 - プロジェクト情報
 
 ## 📋 プロジェクト概要
 
-**サービス名**: New Book RSS Generator v3.0  
+**サービス名**: Book Feed Generator v3.0  
 **URL**: https://bookfeed.vercel.app/  
 **技術スタック**: TypeScript + Vercel Serverless Functions  
 **リポジトリ**: https://github.com/analekt/openbd-feed  
