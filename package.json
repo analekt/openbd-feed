@@ -1,22 +1,23 @@
 {
   "name": "opendb-feed",
-  "version": "2.0.0",
-  "description": "RSS feed generator for OpenBD book database with Vercel Functions",
-  "main": "api/create-feed.js",
+  "version": "3.0.0",
+  "description": "OpenBD新刊フィード作成サービス - TypeScript & Vercel版",
+  "type": "module",
   "scripts": {
     "dev": "vercel dev",
-    "build": "echo 'Static site - no build required'",
-    "start": "vercel dev",
-    "deploy": "vercel --prod"
+    "build": "tsc",
+    "deploy": "vercel --prod",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2",
-    "rss": "^1.2.2"
+    "@vercel/kv": "^1.0.1"
   },
   "devDependencies": {
-    "vercel": "^33.0.0"
+    "@types/node": "^20.10.0",
+    "@vercel/node": "^3.0.14",
+    "typescript": "^5.3.3",
+    "vercel": "^32.7.2"
   },
-  "type": "module",
   "engines": {
     "node": ">=18.0.0"
   }

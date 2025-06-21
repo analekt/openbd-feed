@@ -1,5 +1,10 @@
 node_modules/
-*.log
 .env
+.env.local
+.env.production.local
+.vercel
+dist/
+*.log
 .DS_Store
-data/
+.vscode/
+.idea/

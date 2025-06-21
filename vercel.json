@@ -1,15 +1,16 @@
 {
-  "buildCommand": "echo 'No build required'",
-  "outputDirectory": "docs",
   "functions": {
-    "api/create-feed.js": {
-      "maxDuration": 15
+    "api/create-feed.ts": {
+      "maxDuration": 30
+    },
+    "api/update-feeds.ts": {
+      "maxDuration": 300
     }
   },
-  "rewrites": [
+  "crons": [
     {
-      "source": "/",
-      "destination": "/index.html"
+      "path": "/api/update-feeds",
+      "schedule": "0 19 * * *"
     }
   ],
   "headers": [
@@ -21,5 +22,9 @@
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
       ]
     }
-  ]
+  ],
+  "env": {
+    "KV_REST_API_URL": "@kv-rest-api-url",
+    "KV_REST_API_TOKEN": "@kv-rest-api-token"
+  }
 }
