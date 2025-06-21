@@ -19,8 +19,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    // 一時的なデモ用RSS（フィードIDに基づく固定RSS）
-    const demoRSS = generateDemoRSS(id);
+    // フィード情報を取得
+    const feedData = await storage.getFeed(id);
+    
+    // フィードが存在しない場合
+    if (!feedData) {
+      res.status(404).json({ error: 'Feed not found' });
+      return;
+    }
+
+    // フィード情報に基づくRSS生成
+    const rssContent = generateRSSWithFeedData(id, feedData);
     
     // RSS ヘッダーを設定
     res.setHeader('Content-Type', 'application/rss+xml; charset=UTF-8');
@@ -28,7 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Last-Modified', new Date().toUTCString());
     
     // RSS コンテンツを返す
-    res.status(200).send(demoRSS);
+    res.status(200).send(rssContent);
 
   } catch (error) {
     console.error(`フィード配信エラー (ID: ${req.query.id}):`, error);
@@ -40,13 +49,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-function generateDemoRSS(feedId: string): string {
+function generateRSSWithFeedData(feedId: string, feedData: any): string {
+  // フィード条件からタイトルを生成
+  const feedTitle = generateFeedTitle(feedData.name, feedData.criteria);
+  
+  // フィード条件から説明文を生成
+  const feedDescription = generateFeedDescription(feedData.criteria);
+  
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>New Book RSS Feed (${feedId})</title>
+    <title>${escapeXml(feedTitle)}</title>
     <link>https://openbd.jp/</link>
-    <description>Demo feed for new book information from OpenBD API</description>
+    <description>${escapeXml(feedDescription)}</description>
     <language>ja</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="https://openbd.vercel.app/api/feeds/${feedId}" rel="self" type="application/rss+xml"/>
@@ -75,6 +90,64 @@ function generateDemoRSS(feedId: string): string {
     </item>
   </channel>
 </rss>`;
+}
+
+function generateFeedTitle(feedName: string, criteria: any): string {
+  const conditions = [];
+  
+  if (criteria.seriesName) {
+    conditions.push(`シリーズ「${criteria.seriesName}」`);
+  }
+  if (criteria.titleKeyword) {
+    conditions.push(`「${criteria.titleKeyword}」関連`);
+  }
+  if (criteria.publisher) {
+    conditions.push(`${criteria.publisher}発行`);
+  }
+  if (criteria.ccode) {
+    const matchTypeText = {
+      exact: '完全一致',
+      prefix: '前方一致', 
+      suffix: '後方一致'
+    }[criteria.ccodeMatchType] || '前方一致';
+    conditions.push(`Cコード${criteria.ccode}(${matchTypeText})`);
+  }
+  
+  if (conditions.length > 0) {
+    return `${feedName} - ${conditions.join('・')} - 新刊RSS`;
+  } else {
+    return `${feedName} - 新刊RSS`;
+  }
+}
+
+function generateFeedDescription(criteria: any): string {
+  const conditions = [];
+  
+  if (criteria.seriesName) {
+    conditions.push(`シリーズ名「${criteria.seriesName}」(完全一致)`);
+  }
+  if (criteria.titleKeyword) {
+    conditions.push(`書名に「${criteria.titleKeyword}」を含む`);
+  }
+  if (criteria.publisher) {
+    conditions.push(`出版社「${criteria.publisher}」(完全一致)`);
+  }
+  if (criteria.ccode) {
+    const matchTypeText = {
+      exact: '完全一致',
+      prefix: '前方一致',
+      suffix: '後方一致'
+    }[criteria.ccodeMatchType] || '前方一致';
+    conditions.push(`Cコード「${criteria.ccode}」(${matchTypeText})`);
+  }
+  
+  const baseDescription = 'OpenBD APIを使用した新刊書籍情報のRSSフィードです。';
+  
+  if (conditions.length > 0) {
+    return `${baseDescription} 検索条件: ${conditions.join('、')}`;
+  } else {
+    return baseDescription;
+  }
 }
 
 function escapeXml(text: string): string {

@@ -244,7 +244,7 @@ function showSuccess(data) {
             <strong>RSS URL:</strong><br>
             <span id="feedUrlText">${data.feedUrl}</span>
             <br>
-            <button class="copy-button" onclick="copyToClipboard('${data.feedUrl}')">
+            <button class="copy-button" onclick="copyToClipboard('${data.feedUrl}', this)">
                 URLをコピー
             </button>
         </div>
@@ -316,20 +316,84 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        // 一時的にボタンのテキストを変更
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = 'コピーしました！';
-        button.style.background = '#10b981';
+function copyToClipboard(text, buttonElement) {
+    // より確実なクリップボードコピー関数
+    const copyText = async () => {
+        try {
+            // Modern browsers - navigator.clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+                return true;
+            }
+            
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            const success = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            if (!success) {
+                throw new Error('execCommand failed');
+            }
+            
+            return true;
+        } catch (err) {
+            console.error('クリップボードコピーエラー:', err);
+            return false;
+        }
+    };
+    
+    copyText().then(success => {
+        // ボタンの取得 - event.targetまたは引数から
+        const button = buttonElement || event?.target;
         
-        setTimeout(() => {
-            button.textContent = originalText;
-            button.style.background = '#667eea';
-        }, 2000);
-    }).catch(err => {
-        console.error('クリップボードへのコピーに失敗:', err);
-        alert('クリップボードへのコピーに失敗しました。手動でURLをコピーしてください。');
+        if (success) {
+            if (button) {
+                const originalText = button.textContent;
+                const originalBackground = button.style.background;
+                
+                button.textContent = 'コピーしました！';
+                button.style.background = '#10b981';
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = originalBackground || '#667eea';
+                    button.disabled = false;
+                }, 2000);
+            }
+        } else {
+            // フォールバック: テキスト選択
+            if (button) {
+                button.textContent = 'コピーに失敗しました';
+                button.style.background = '#ef4444';
+                
+                setTimeout(() => {
+                    button.textContent = 'URLをコピー';
+                    button.style.background = '#667eea';
+                }, 2000);
+            }
+            
+            // テキストを選択状態にして手動コピーを促す
+            const feedUrlElement = document.getElementById('feedUrlText');
+            if (feedUrlElement) {
+                if (window.getSelection) {
+                    const selection = window.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(feedUrlElement);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+            
+            alert('自動コピーに失敗しました。URLが選択されているので、Ctrl+C (Mac: Cmd+C) で手動コピーしてください。');
+        }
     });
 }
