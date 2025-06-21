@@ -1,7 +1,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { StorageManager } from '../../lib/storage.js';
+import { EdgeStorageManager } from '../../lib/storage-edge.js';
 
-const storage = new StorageManager();
+const storage = new EdgeStorageManager();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // GET メソッドのみ受け付け
