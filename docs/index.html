@@ -220,33 +220,27 @@
         
         async function submitToFormService(feedData) {
             try {
-                // Formspreeを使用してフォーム送信（GitHubアカウント不要）
-                const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+                // Vercel APIを使用してフィード作成（GitHubアカウント不要）
+                const response = await fetch('/api/create-feed', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        feedName: feedData.feedName,
-                        seriesName: feedData.seriesName || '',
-                        titleKeyword: feedData.titleKeyword || '',
-                        publisher: feedData.publisher || '',
-                        ccode: feedData.ccode || '',
-                        ccodeMatchType: feedData.ccodeMatchType || 'prefix',
-                        timestamp: new Date().toISOString(),
-                        requestType: 'feed-creation'
-                    })
+                    body: JSON.stringify(feedData)
                 });
                 
-                if (response.ok) {
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
                     // 成功時
                     document.getElementById('result').innerHTML = `
                         <strong>✅ フィード作成リクエストを受け付けました！</strong><br><br>
                         <div style="background: #d4edda; padding: 15px; border-radius: 5px; margin: 15px 0;">
                             <h4>📋 処理状況</h4>
                             <p><strong>フィード名:</strong> ${feedData.feedName}</p>
-                            <p><strong>ステータス:</strong> リクエスト受付完了</p>
-                            <p><strong>処理予定:</strong> 1-2日以内に作成</p>
+                            <p><strong>ステータス:</strong> ${result.message}</p>
+                            <p><strong>処理予定:</strong> ${result.estimatedTime}</p>
+                            ${result.issueNumber ? `<p><strong>Issue番号:</strong> #${result.issueNumber}</p>` : ''}
                         </div>
                         
                         <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
@@ -266,13 +260,18 @@
                     // フォームをリセット
                     document.getElementById('feedForm').reset();
                     
+                    // フィード一覧を再読み込み（数秒後）
+                    setTimeout(loadExistingFeeds, 3000);
+                    
                 } else {
-                    throw new Error('フォーム送信に失敗しました');
+                    // API失敗時はフォールバック
+                    console.error('Vercel API error:', result);
+                    showEmailFallback(feedData);
                 }
                 
             } catch (error) {
-                console.error('Form service error:', error);
-                // フォールバック: メール送信
+                console.error('Vercel API error:', error);
+                // ネットワークエラー等でVercel APIが使えない場合
                 showEmailFallback(feedData);
             }
         }

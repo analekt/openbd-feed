@@ -13,7 +13,8 @@ OpenBD APIを使用して、ユーザーが指定した条件に一致する新�
 ## 利用方法
 
 1. **サービスサイトにアクセス**
-   - https://analekt.github.io/opendb-feed/
+   - https://opendb-feed.vercel.app/ （Vercel版）
+   - https://analekt.github.io/opendb-feed/ （GitHub Pages版・旧）
 
 2. **フィード作成フォームに入力**
    - フィード名（必須）
@@ -39,20 +40,22 @@ OpenBD APIを使用して、ユーザーが指定した条件に一致する新�
 
 ### フロントエンド
 - 静的HTML/CSS/JavaScript
-- GitHub Pages でホスティング
+- **Vercel** でホスティング
 - レスポンシブデザイン
 
 ### バックエンド
-- Node.js + GitHub Actions
+- **Vercel Serverless Functions** + GitHub Actions
+- 完全自動化されたフィード作成
 - GitHub Issues を管理システムとして活用
 - JSON ファイルでデータ管理
 
 ### データフロー
-1. ユーザーがWebフォームから送信
-2. GitHub Issue として自動作成
-3. GitHub Actions がIssueを検知・処理
-4. フィード設定を作成・RSSファイル生成
-5. 毎日の定期実行で全フィード更新
+1. ユーザーがWebフォームから送信（**GitHubアカウント不要**）
+2. **Vercel Function** がリクエストを処理
+3. **GitHub API** で自動的にIssue作成
+4. **GitHub Actions** がIssueを検知・処理
+5. フィード設定を作成・RSSファイル生成
+6. 毎日の定期実行で全フィード更新
 
 ## 開発者向け情報
 
