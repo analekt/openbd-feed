@@ -3,7 +3,7 @@
 ## 📋 プロジェクト概要
 
 **サービス名**: OpenBD新刊フィードサービス v3.0  
-**URL**: https://opendb-feed.vercel.app/  
+**URL**: https://openbd.vercel.app/  
 **技術スタック**: TypeScript + Vercel Serverless Functions  
 **リポジトリ**: https://github.com/analekt/opendb-feed  
 
@@ -57,7 +57,7 @@ OpenBD APIを使用して日本の新刊書籍情報をユーザー指定条件�
 ## 🚀 デプロイメント情報
 
 ### 環境
-- **本番**: https://opendb-feed.vercel.app/
+- **本番**: https://openbd.vercel.app/
 - **プラットフォーム**: Vercel
 - **ランタイム**: Node.js 18+
 - **ビルド**: TypeScript → JavaScript
@@ -106,7 +106,7 @@ vercel env pull .env.local
 {
   "success": true,
   "feedId": "abc123def456",
-  "feedUrl": "https://opendb-feed.vercel.app/api/feeds/abc123def456",
+  "feedUrl": "https://openbd.vercel.app/api/feeds/abc123def456",
   "message": "フィードが正常に作成されました"
 }
 ```

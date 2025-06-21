@@ -49,7 +49,7 @@ function generateDemoRSS(feedId: string): string {
     <description>OpenBD APIから取得した新刊情報のデモフィードです</description>
     <language>ja</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <atom:link href="https://opendb-feed.vercel.app/api/feeds/${feedId}" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://openbd.vercel.app/api/feeds/${feedId}" rel="self" type="application/rss+xml"/>
     <generator>OpenBD Feed Generator v3.0</generator>
     
     <item>
