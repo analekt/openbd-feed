@@ -1,11 +1,11 @@
 import { OpenBDBook, Feed, FeedHistory } from '../types/index.js';
-import { EdgeStorageManager } from './storage-edge.js';
+import { SimpleStorageManager } from './storage-simple.js';
 import { OpenBDClient } from './openbd-client.js';
 import { BookMatcher } from './book-matcher.js';
 import { RSSGenerator } from './rss-generator.js';
 
 export class FeedUpdater {
-  private storage = new EdgeStorageManager();
+  private storage = new SimpleStorageManager();
   private openBDClient = new OpenBDClient();
   private bookMatcher = new BookMatcher();
   private rssGenerator = new RSSGenerator();

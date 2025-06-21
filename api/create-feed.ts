@@ -1,10 +1,10 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { CreateFeedRequest, CreateFeedResponse, Feed } from '../types/index.js';
-import { EdgeStorageManager } from '../lib/storage-edge.js';
+import { SimpleStorageManager } from '../lib/storage-simple.js';
 import { BookMatcher } from '../lib/book-matcher.js';
 import { FeedUpdater } from '../lib/feed-updater.js';
 
-const storage = new EdgeStorageManager();
+const storage = new SimpleStorageManager();
 const bookMatcher = new BookMatcher();
 const feedUpdater = new FeedUpdater();
 
