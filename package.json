@@ -1,7 +1,7 @@
 {
   "name": "opendb-feed",
   "version": "3.0.0",
-  "description": "OpenBD新刊フィード作成サービス - TypeScript & Vercel版",
+  "description": "New Book RSS Generator - TypeScript & Vercel Edition",
   "type": "module",
   "scripts": {
     "dev": "vercel dev",

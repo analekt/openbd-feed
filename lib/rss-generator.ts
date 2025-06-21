@@ -16,7 +16,7 @@ export class RSSGenerator {
     <language>ja</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="https://openbd.vercel.app/api/feeds/${feed.id}" rel="self" type="application/rss+xml"/>
-    <generator>OpenBD Feed Generator v3.0</generator>
+    <generator>New Book RSS Generator v3.0</generator>
     
 ${items.map(item => this.formatRSSItem(item)).join('\n')}
   </channel>
@@ -90,7 +90,7 @@ ${items.map(item => this.formatRSSItem(item)).join('\n')}
       conditions.push(`Cコード: ${feed.criteria.ccode} (${matchTypeText})`);
     }
     
-    return `OpenBD APIから取得した新刊情報のフィードです。条件: ${conditions.join(', ')}`;
+    return `New book information feed from OpenBD API. Criteria: ${conditions.join(', ')}`;
   }
 
   private escapeXml(text: string): string {

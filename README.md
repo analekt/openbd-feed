@@ -1,6 +1,6 @@
-# OpenBD新刊フィード作成サービス v3.0
+# New Book RSS Generator v3.0
 
-OpenBD APIを使用した新刊情報RSSフィード配信サービス - TypeScript & Vercel統合版
+RSS feed distribution service for new book information using OpenBD API - TypeScript & Vercel Edition
 
 ## 特徴
 

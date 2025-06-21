@@ -44,13 +44,13 @@ function generateDemoRSS(feedId: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>OpenBD新刊フィード (${feedId})</title>
+    <title>New Book RSS Feed (${feedId})</title>
     <link>https://openbd.jp/</link>
-    <description>OpenBD APIから取得した新刊情報のデモフィードです</description>
+    <description>Demo feed for new book information from OpenBD API</description>
     <language>ja</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="https://openbd.vercel.app/api/feeds/${feedId}" rel="self" type="application/rss+xml"/>
-    <generator>OpenBD Feed Generator v3.0</generator>
+    <generator>New Book RSS Generator v3.0</generator>
     
     <item>
       <title>【デモ】JavaScript最新技術ガイド / サンプル出版社</title>
