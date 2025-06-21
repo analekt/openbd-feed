@@ -5,7 +5,7 @@
 **サービス名**: OpenBD新刊フィードサービス v3.0  
 **URL**: https://openbd.vercel.app/  
 **技術スタック**: TypeScript + Vercel Serverless Functions  
-**リポジトリ**: https://github.com/analekt/opendb-feed  
+**リポジトリ**: https://github.com/analekt/openbd-feed  
 
 OpenBD APIを使用して日本の新刊書籍情報をユーザー指定条件でフィルタリングし、RSSフィードとして配信するサービスです。
 
@@ -256,8 +256,8 @@ vercel env pull .env.local
 ## 📞 サポート・問い合わせ
 
 ### 開発者向け
-- **GitHub Issues**: https://github.com/analekt/opendb-feed/issues
-- **リポジトリ**: https://github.com/analekt/opendb-feed
+- **GitHub Issues**: https://github.com/analekt/openbd-feed/issues
+- **リポジトリ**: https://github.com/analekt/openbd-feed
 
 ### Claude Code活用
 - このプロジェクトはClaude Code (Sonnet 4)で開発されました
