@@ -1,9 +1,17 @@
 {
+  "buildCommand": "echo 'No build required'",
+  "outputDirectory": "docs",
   "functions": {
     "api/create-feed.js": {
       "maxDuration": 15
     }
   },
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
