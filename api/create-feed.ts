@@ -97,7 +97,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log(`新しいフィード作成: ${newFeed.name} (${feedId})`);
 
     // 成功レスポンス
-    const feedUrl = `https://openbd.vercel.app/api/feeds/${feedId}`;
+    const feedUrl = `https://bookfeed.vercel.app/api/feeds/${feedId}`;
     
     res.status(200).json({
       success: true,

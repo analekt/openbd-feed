@@ -41,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         },
         createdAt: feed.createdAt,
         lastUpdated: feed.lastUpdated,
-        feedUrl: `https://openbd.vercel.app/api/feeds/${feed.id}`,
+        feedUrl: `https://bookfeed.vercel.app/api/feeds/${feed.id}`,
         itemCount: 0 // TODO: RSS アイテム数を取得
       }))
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());

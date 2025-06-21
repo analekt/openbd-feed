@@ -64,7 +64,7 @@ function generateRSSWithFeedData(feedId: string, feedData: any): string {
     <description>${escapeXml(feedDescription)}</description>
     <language>ja</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <atom:link href="https://openbd.vercel.app/api/feeds/${feedId}" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://bookfeed.vercel.app/api/feeds/${feedId}" rel="self" type="application/rss+xml"/>
     <generator>New Book RSS Generator v3.0</generator>
     
     <item>
