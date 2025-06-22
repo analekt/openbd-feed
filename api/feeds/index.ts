@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { SimpleStorageManager } from '../../lib/storage-simple.js';
+import { Feed } from '../../types/index.js';
 
 const storage = new SimpleStorageManager();
 
@@ -24,7 +25,44 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // フィード一覧インデックスを取得
     const feedIndex = await storage.getGlobalConfig();
-    const feedIndexData = await storage.getAllFeeds();
+    let feedIndexData = await storage.getAllFeeds();
+
+    // フィードが存在しない場合はデモデータを提供
+    if (feedIndexData.length === 0) {
+      feedIndexData = [
+        {
+          id: 'demo-feed-001',
+          name: 'プログラミング技術書フィード',
+          criteria: {
+            titleKeyword: 'プログラミング',
+            ccodeMatchType: 'prefix' as const
+          },
+          createdAt: new Date(Date.now() - 86400000).toISOString(), // 1日前
+          lastUpdated: new Date().toISOString(),
+          active: true,
+          settings: {
+            maxItems: 50,
+            updateInterval: 'daily' as const
+          }
+        },
+        {
+          id: 'demo-feed-002',
+          name: 'JavaScript技術書フィード',
+          criteria: {
+            titleKeyword: 'JavaScript',
+            publisher: '技術評論社',
+            ccodeMatchType: 'prefix' as const
+          },
+          createdAt: new Date(Date.now() - 172800000).toISOString(), // 2日前
+          lastUpdated: new Date().toISOString(),
+          active: true,
+          settings: {
+            maxItems: 50,
+            updateInterval: 'daily' as const
+          }
+        }
+      ];
+    }
 
     // 公開用のフィード情報を作成
     const publicFeeds = feedIndexData

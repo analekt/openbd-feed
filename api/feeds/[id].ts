@@ -21,12 +21,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // フィード情報を取得
-    const feedData = await storage.getFeed(id);
+    let feedData = await storage.getFeed(id);
     
-    // フィードが存在しない場合
+    // フィードが存在しない場合はデモデータを使用
     if (!feedData) {
-      res.status(404).json({ error: 'Feed not found' });
-      return;
+      // デモフィードデータを生成
+      feedData = {
+        id: id,
+        name: 'デモフィード',
+        criteria: {
+          titleKeyword: 'プログラミング',
+          ccodeMatchType: 'prefix' as const
+        },
+        createdAt: new Date().toISOString(),
+        lastUpdated: new Date().toISOString(),
+        active: true,
+        settings: {
+          maxItems: 50,
+          updateInterval: 'daily' as const
+        }
+      };
     }
 
     // フィード情報に基づくRSS生成
