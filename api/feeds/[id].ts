@@ -65,8 +65,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 }
 
 function generateRSSWithFeedData(feedId: string, feedData: any): string {
-  // フィード条件からタイトルを生成
-  const feedTitle = generateFeedTitle(feedData.name, feedData.criteria);
+  // フィード名をそのままタイトルに使用
+  const feedTitle = feedData.name;
   
   // フィード条件から説明文を生成
   const feedDescription = generateFeedDescription(feedData.criteria);
@@ -107,34 +107,6 @@ function generateRSSWithFeedData(feedId: string, feedData: any): string {
 </rss>`;
 }
 
-function generateFeedTitle(feedName: string, criteria: FeedCriteria): string {
-  const conditions = [];
-  
-  if (criteria.seriesName) {
-    conditions.push(`シリーズ「${criteria.seriesName}」`);
-  }
-  if (criteria.titleKeyword) {
-    conditions.push(`「${criteria.titleKeyword}」関連`);
-  }
-  if (criteria.publisher) {
-    conditions.push(`${criteria.publisher}発行`);
-  }
-  if (criteria.ccode) {
-    const matchTypeText: Record<string, string> = {
-      exact: '完全一致',
-      prefix: '前方一致', 
-      suffix: '後方一致'
-    };
-    const displayText = matchTypeText[criteria.ccodeMatchType] || '前方一致';
-    conditions.push(`Cコード${criteria.ccode}(${displayText})`);
-  }
-  
-  if (conditions.length > 0) {
-    return `${feedName} - ${conditions.join('・')} - 新刊RSS`;
-  } else {
-    return `${feedName} - 新刊RSS`;
-  }
-}
 
 function generateFeedDescription(criteria: FeedCriteria): string {
   const conditions = [];
