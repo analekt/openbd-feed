@@ -49,6 +49,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    // 既存フィードの検索
+    const existingFeed = await storage.findFeedByCriteria(
+      {
+        seriesName: requestData.seriesName?.trim() || undefined,
+        titleKeyword: requestData.titleKeyword?.trim() || undefined,
+        publisher: requestData.publisher?.trim() || undefined,
+        ccode: requestData.ccode?.trim() || undefined,
+        ccodeMatchType: requestData.ccodeMatchType || 'prefix'
+      },
+      requestData.feedName.trim()
+    );
+
+    // 既存フィードがある場合は既存のURLを返す
+    if (existingFeed) {
+      const feedUrl = `https://bookfeed.vercel.app/api/feeds/${existingFeed.id}`;
+      
+      console.log(`既存フィードを返却: ${existingFeed.name} (${existingFeed.id})`);
+      
+      res.status(200).json({
+        success: true,
+        feedId: existingFeed.id,
+        feedUrl,
+        message: '同じ条件のフィードが既に存在するため、既存のフィードURLを返却しました'
+      } as CreateFeedResponse);
+      return;
+    }
+
     // フィード数制限チェック
     const existingFeeds = await storage.getAllFeeds();
     if (existingFeeds.length >= 1000) {

@@ -1,4 +1,5 @@
-import { Feed, FeedHistory, GlobalConfig } from '../types/feed.js';
+import { Feed, FeedHistory, GlobalConfig, FeedCriteria } from '../types/feed.js';
+import { createHash } from 'crypto';
 
 // 一時的なメモリ内ストレージ（本格運用時はVercel KVまたはEdge Config + Blobに移行）
 export class SimpleStorageManager {
@@ -49,6 +50,32 @@ export class SimpleStorageManager {
   async getActiveFeeds(): Promise<Feed[]> {
     const allFeeds = await this.getAllFeeds();
     return allFeeds.filter(feed => feed.active);
+  }
+
+  async findFeedByCriteria(criteria: FeedCriteria, feedName: string): Promise<Feed | null> {
+    try {
+      const allFeeds = await this.getAllFeeds();
+      
+      return allFeeds.find(feed => {
+        return feed.active && 
+               feed.name === feedName &&
+               this.criteriaMatch(feed.criteria, criteria);
+      }) || null;
+    } catch (error) {
+      console.error('条件によるフィード検索エラー:', error);
+      return null;
+    }
+  }
+
+  private criteriaMatch(criteria1: FeedCriteria, criteria2: FeedCriteria): boolean {
+    // 正規化して比較
+    const normalize = (str?: string) => str?.trim().toLowerCase() || '';
+    
+    return normalize(criteria1.seriesName) === normalize(criteria2.seriesName) &&
+           normalize(criteria1.titleKeyword) === normalize(criteria2.titleKeyword) &&
+           normalize(criteria1.publisher) === normalize(criteria2.publisher) &&
+           normalize(criteria1.ccode) === normalize(criteria2.ccode) &&
+           criteria1.ccodeMatchType === criteria2.ccodeMatchType;
   }
 
   async deleteFeed(feedId: string): Promise<void> {
