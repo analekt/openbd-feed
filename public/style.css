@@ -54,9 +54,26 @@ header .description {
 
 /* Main Content */
 main {
-    display: grid;
-    gap: 40px;
     margin-bottom: 40px;
+}
+
+/* Two Column Layout */
+.two-column-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
 }
 
 /* Form Section */
@@ -268,8 +285,8 @@ main {
 }
 
 .info-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 20px;
 }
 
@@ -388,6 +405,12 @@ footer a:hover {
         font-size: 2em;
     }
     
+    /* Mobile: Stack columns vertically */
+    .two-column-layout {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
     .form-section,
     .info-section,
     .recent-feeds-section {
@@ -404,10 +427,6 @@ footer a:hover {
     
     .ccode-input-group select {
         width: 100%;
-    }
-    
-    .info-cards {
-        grid-template-columns: 1fr;
     }
     
     .feed-meta {

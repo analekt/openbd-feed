@@ -16,9 +16,10 @@
             </p>
         </header>
 
-        <main>
-            <div class="form-section">
-                <h2>新しいフィードを作成</h2>
+        <main class="two-column-layout">
+            <div class="left-column">
+                <div class="form-section">
+                    <h2>新しいフィードを作成</h2>
                 
                 <form id="createFeedForm">
                     <div class="form-group">
@@ -86,38 +87,41 @@
                 </div>
 
                 <div id="result" class="result hidden"></div>
-            </div>
-
-            <div class="info-section">
-                <h2>サービス情報</h2>
-                
-                <div class="info-cards">
-                    <div class="info-card">
-                        <h3>📊 統計情報</h3>
-                        <div id="statsInfo">読み込み中...</div>
-                    </div>
-                    
-                    <div class="info-card">
-                        <h3>🔄 更新情報</h3>
-                        <p>フィードは毎日午前4時（JST）に自動更新されます</p>
-                        <p>OpenBD APIから最新1000件の書籍情報を取得して処理します</p>
-                    </div>
-                    
-                    <div class="info-card">
-                        <h3>💡 利用方法</h3>
-                        <ol>
-                            <li>上記フォームで検索条件を設定</li>
-                            <li>「フィードを作成」ボタンをクリック</li>
-                            <li>生成されたRSS URLをお使いのRSSリーダーに登録</li>
-                        </ol>
-                    </div>
-                    
                 </div>
             </div>
 
-            <div class="recent-feeds-section">
-                <h2>ユーザーが最近作成したフィード</h2>
-                <div id="recentFeeds">読み込み中...</div>
+            <div class="right-column">
+                <div class="recent-feeds-section">
+                    <h2>ユーザーが最近作成したフィード</h2>
+                    <div id="recentFeeds">読み込み中...</div>
+                </div>
+
+                <div class="info-section">
+                    <h2>サービス情報</h2>
+                    
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <h3>📊 統計情報</h3>
+                            <div id="statsInfo">読み込み中...</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <h3>🔄 更新情報</h3>
+                            <p>フィードは毎日午前4時（JST）に自動更新されます</p>
+                            <p>OpenBD APIから最新1000件の書籍情報を取得して処理します</p>
+                        </div>
+                        
+                        <div class="info-card">
+                            <h3>💡 利用方法</h3>
+                            <ol>
+                                <li>左のフォームで検索条件を設定</li>
+                                <li>「フィードを作成」ボタンをクリック</li>
+                                <li>生成されたRSS URLをお使いのRSSリーダーに登録</li>
+                            </ol>
+                        </div>
+                        
+                    </div>
+                </div>
             </div>
         </main>
 
