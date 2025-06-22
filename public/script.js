@@ -57,7 +57,23 @@ async function handleFormSubmit(e) {
             // 統計情報と最新フィード一覧を更新
             setTimeout(() => {
                 loadStatistics();
-                loadRecentFeeds();
+                // 新規作成されたフィード情報を含めて更新
+                const newFeedInfo = {
+                    id: data.feedId,
+                    name: formData.feedName,
+                    criteria: {
+                        seriesName: formData.seriesName || null,
+                        titleKeyword: formData.titleKeyword || null,
+                        publisher: formData.publisher || null,
+                        ccode: formData.ccode || null,
+                        ccodeMatchType: formData.ccodeMatchType
+                    },
+                    createdAt: new Date().toISOString(),
+                    lastUpdated: new Date().toISOString(),
+                    feedUrl: data.feedUrl,
+                    itemCount: 0
+                };
+                loadRecentFeeds(newFeedInfo);
             }, 1000);
         } else {
             showError(data.message);
@@ -193,9 +209,16 @@ async function loadStatistics() {
 }
 
 // 最新フィード一覧の読み込み
-async function loadRecentFeeds() {
+async function loadRecentFeeds(newFeedInfo = null) {
     try {
-        const response = await fetch('/api/feeds/index');
+        // 新規フィード情報をクエリパラメータとして渡す
+        let url = '/api/feeds/index';
+        if (newFeedInfo) {
+            const feedParam = encodeURIComponent(JSON.stringify(newFeedInfo));
+            url += `?newFeed=${feedParam}`;
+        }
+        
+        const response = await fetch(url);
         const data = await response.json();
         
         const recentFeedsElement = document.getElementById('recentFeeds');

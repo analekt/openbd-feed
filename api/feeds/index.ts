@@ -27,6 +27,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const feedIndex = await storage.getGlobalConfig();
     let feedIndexData = await storage.getAllFeeds();
 
+    // 新規作成されたフィードをクエリパラメータから取得
+    const { newFeed } = req.query;
+    if (newFeed && typeof newFeed === 'string') {
+      try {
+        const newFeedData = JSON.parse(decodeURIComponent(newFeed));
+        feedIndexData.unshift(newFeedData); // 最新フィードとして先頭に追加
+      } catch (error) {
+        console.error('新規フィードデータのパース失敗:', error);
+      }
+    }
+
     // フィードが存在しない場合はデモデータを提供
     if (feedIndexData.length === 0) {
       feedIndexData = [
