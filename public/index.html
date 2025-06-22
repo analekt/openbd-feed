@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📚Book Feed Generator v3.0</title>
+    <title>📚Book Feed Generator</title>
     <meta name="description" content="Create customized RSS feeds for new book information using OpenBD API">
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📚Book Feed Generator🛜</h1>
+            <h1>📚Book Feed Generator</h1>
             <p class="description">
                 特定の条件で書籍の新刊情報を検索し、専用のRSSフィードを生成します。<a href="https://openbd.jp/" target="_blank">OpenBD API</a>を利用しています。ご利用に料金はかかりません。
             </p>
@@ -19,11 +19,11 @@
         <main class="two-column-layout">
             <div class="left-column">
                 <div class="form-section">
-                    <h2>新しいフィードを作成</h2>
+                    <h2>新しいフィードを作成しよう！</h2>
                 
                 <form id="createFeedForm">
                     <div class="form-group">
-                        <label for="feedName">フィード名 <span class="required">*</span></label>
+                        <label for="feedName">フィードの名前 <span class="required">*</span></label>
                         <input type="text" id="feedName" name="feedName" required maxlength="100" 
                                placeholder="例: 中公新書フィード">
                         <div class="help-text">作成するフィードの名前（100文字以内）</div>
@@ -71,7 +71,7 @@
 
                     <div class="form-group">
                         <div class="validation-note">
-                            <strong>注意:</strong> 少なくとも一つの検索条件（シリーズ名、書名、出版社、Cコード）を入力してください。
+                            <strong>💡注意:</strong> 少なくとも一つの検索条件（シリーズ名、書名、出版社、Cコード）を入力してください。
                         </div>
                     </div>
 
@@ -92,7 +92,7 @@
 
             <div class="right-column">
                 <div class="recent-feeds-section">
-                    <h2>ユーザーが最近作成したフィード</h2>
+                    <h2>📈ユーザーが最近作成したフィード</h2>
                     <div id="recentFeeds">読み込み中...</div>
                 </div>
 
