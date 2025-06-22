@@ -13,7 +13,7 @@
             <h1>📚Book Feed Generator</h1>
             <p class="version">v3.0 - TypeScript & Vercel版</p>
             <p class="description">
-                特定の条件で書籍の新刊情報を検索し、専用のRSSフィードを生成します。<a href="https://openbd.jp/" target="_blank">OpenBD API</a>を利用し、Claude Codeで開発しました。ご利用に料金はかかりません。詳しくは<a href="https://github.com/analekt/openbd-feed/" target="_blank">こちら</a>をご覧ください。
+                特定の条件で書籍の新刊情報を検索し、専用のRSSフィードを生成します。<a href="https://openbd.jp/" target="_blank">OpenBD API</a>を利用しています。ご利用に料金はかかりません。
             </p>
         </header>
 
@@ -25,28 +25,28 @@
                     <div class="form-group">
                         <label for="feedName">フィード名 <span class="required">*</span></label>
                         <input type="text" id="feedName" name="feedName" required maxlength="100" 
-                               placeholder="例: 技術書新刊フィード">
+                               placeholder="例: 中公新書フィード">
                         <div class="help-text">作成するフィードの名前（100文字以内）</div>
                     </div>
 
                     <div class="form-group">
                         <label for="seriesName">シリーズ名/レーベル名</label>
                         <input type="text" id="seriesName" name="seriesName" maxlength="200" 
-                               placeholder="例: 技術評論社">
+                               placeholder="例: 中公新書">
                         <div class="help-text">完全一致で検索します（200文字以内）</div>
                     </div>
 
                     <div class="form-group">
                         <label for="titleKeyword">書名キーワード</label>
                         <input type="text" id="titleKeyword" name="titleKeyword" maxlength="200" 
-                               placeholder="例: JavaScript">
+                               placeholder="例: 応仁の乱">
                         <div class="help-text">書名に含まれるキーワード（部分一致、200文字以内）</div>
                     </div>
 
                     <div class="form-group">
                         <label for="publisher">発行元出版社</label>
                         <input type="text" id="publisher" name="publisher" maxlength="200" 
-                               placeholder="例: 株式会社技術評論社">
+                               placeholder="例: 中央公論新社">
                         <div class="help-text">完全一致で検索します（200文字以内）</div>
                     </div>
 
