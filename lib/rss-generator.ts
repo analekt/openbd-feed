@@ -35,11 +35,12 @@ ${items.map(item => this.formatRSSItem(item)).join('\n')}
     
     const itemTitle = `${title}${volume}${author}${publisher}`;
     
-    // 商品ページのURL（OpenBDまたはAmazon等）
-    const link = `https://openbd.jp/${bookInfo.isbn}`;
+    // Amazonアフィリエイトリンクを優先、フォールバックでOpenBD
+    const amazonLink = this.openBDClient.generateAmazonLink(bookInfo.isbn10);
+    const link = amazonLink || `https://openbd.jp/${bookInfo.isbn}`;
     
     // アイテムの説明文
-    let description = `ISBN: ${bookInfo.isbn}`;
+    let description = `ISBN: ${bookInfo.isbn13}`;
     if (bookInfo.description) {
       description += `\n\n${bookInfo.description}`;
     }
@@ -48,6 +49,11 @@ ${items.map(item => this.formatRSSItem(item)).join('\n')}
     }
     if (bookInfo.cover) {
       description += `\n\n<img src="${bookInfo.cover}" alt="表紙画像" style="max-width: 200px;">`;
+    }
+    
+    // Amazonリンクがある場合は購入リンクを追加
+    if (amazonLink) {
+      description += `\n\n<p><strong><a href="${amazonLink}" target="_blank">Amazonで購入</a></strong></p>`;
     }
     
     return {

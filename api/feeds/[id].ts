@@ -84,10 +84,11 @@ function generateRSSWithFeedData(feedId: string, feedData: any): string {
     
     <item>
       <title>【デモ】JavaScript最新技術ガイド / サンプル出版社</title>
-      <link>https://openbd.jp/9784123456789</link>
+      <link>https://www.amazon.co.jp/dp/4123456789?tag=bookfeed-22</link>
       <description><![CDATA[
         ISBN: 978-4-12345-678-9<br><br>
-        このフィードは正常に動作しています。実際の書籍データはOpenBD APIから取得され、指定された条件に一致する新刊が自動的に追加されます。
+        このフィードは正常に動作しています。実際の書籍データはOpenBD APIから取得され、指定された条件に一致する新刊が自動的に追加されます。<br><br>
+        <p><strong><a href="https://www.amazon.co.jp/dp/4123456789?tag=bookfeed-22" target="_blank">Amazonで購入</a></strong></p>
       ]]></description>
       <pubDate>${new Date().toUTCString()}</pubDate>
       <guid isPermaLink="false">demo-${feedId}-001</guid>
@@ -95,10 +96,11 @@ function generateRSSWithFeedData(feedId: string, feedData: any): string {
     
     <item>
       <title>【デモ】TypeScript実践ガイド / テック出版</title>
-      <link>https://openbd.jp/9784987654321</link>
+      <link>https://www.amazon.co.jp/dp/4987654321?tag=bookfeed-22</link>
       <description><![CDATA[
         ISBN: 978-4-98765-432-1<br><br>
-        フィードが作成されました。毎日午前4時に自動更新され、新しい書籍情報が追加されます。
+        フィードが作成されました。毎日午前4時に自動更新され、新しい書籍情報が追加されます。<br><br>
+        <p><strong><a href="https://www.amazon.co.jp/dp/4987654321?tag=bookfeed-22" target="_blank">Amazonで購入</a></strong></p>
       ]]></description>
       <pubDate>${new Date(Date.now() - 86400000).toUTCString()}</pubDate>
       <guid isPermaLink="false">demo-${feedId}-002</guid>

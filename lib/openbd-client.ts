@@ -38,10 +38,15 @@ export class OpenBDClient {
     const onix = book.onix;
     const summary = book.summary;
     
-    // ISBN取得
-    const isbn = onix.ProductIdentifier?.find(
+    // ISBN取得（13桁）
+    const isbn13 = onix.ProductIdentifier?.find(
       id => id.ProductIDType === '15'
     )?.IDValue || summary?.isbn || '';
+    
+    // ISBN取得（10桁）
+    const isbn10 = onix.ProductIdentifier?.find(
+      id => id.ProductIDType === '02'
+    )?.IDValue || this.convertISBN13to10(isbn13);
 
     // タイトル取得
     const titleElement = onix.DescriptiveDetail.TitleDetail?.[0]?.TitleElement?.[0];
@@ -79,7 +84,9 @@ export class OpenBDClient {
     )?.Text || '';
 
     return {
-      isbn,
+      isbn13,
+      isbn10,
+      isbn: isbn13, // 後方互換性のため
       title,
       author,
       publisher,
@@ -90,5 +97,37 @@ export class OpenBDClient {
       description,
       volume: summary?.volume || ''
     };
+  }
+
+  // ISBN-13からISBN-10に変換
+  private convertISBN13to10(isbn13: string): string {
+    if (!isbn13 || isbn13.length !== 13) return '';
+    
+    // 978で始まる場合のみ変換可能
+    if (!isbn13.startsWith('978')) return '';
+    
+    // 最初の3桁（978）を除去して9桁取得
+    const isbn9 = isbn13.substring(3, 12);
+    
+    // チェックディジット計算
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+      sum += parseInt(isbn9[i]) * (10 - i);
+    }
+    
+    const remainder = sum % 11;
+    const checkDigit = remainder === 0 ? 0 : remainder === 1 ? 'X' : 11 - remainder;
+    
+    return isbn9 + checkDigit;
+  }
+
+  // Amazonアフィリエイトリンク生成
+  generateAmazonLink(isbn10: string, associateId: string = 'bookfeed-22'): string {
+    if (!isbn10) return '';
+    
+    // ハイフンを除去
+    const cleanIsbn = isbn10.replace(/-/g, '');
+    
+    return `https://www.amazon.co.jp/dp/${cleanIsbn}?tag=${associateId}`;
   }
 }
