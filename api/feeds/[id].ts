@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { SimpleStorageManager } from '../../lib/storage-simple.js';
+import { FeedCriteria } from '../../types/index.js';
 
 const storage = new SimpleStorageManager();
 
@@ -92,7 +93,7 @@ function generateRSSWithFeedData(feedId: string, feedData: any): string {
 </rss>`;
 }
 
-function generateFeedTitle(feedName: string, criteria: any): string {
+function generateFeedTitle(feedName: string, criteria: FeedCriteria): string {
   const conditions = [];
   
   if (criteria.seriesName) {
@@ -105,12 +106,13 @@ function generateFeedTitle(feedName: string, criteria: any): string {
     conditions.push(`${criteria.publisher}発行`);
   }
   if (criteria.ccode) {
-    const matchTypeText = {
+    const matchTypeText: Record<string, string> = {
       exact: '完全一致',
       prefix: '前方一致', 
       suffix: '後方一致'
-    }[criteria.ccodeMatchType] || '前方一致';
-    conditions.push(`Cコード${criteria.ccode}(${matchTypeText})`);
+    };
+    const displayText = matchTypeText[criteria.ccodeMatchType] || '前方一致';
+    conditions.push(`Cコード${criteria.ccode}(${displayText})`);
   }
   
   if (conditions.length > 0) {
@@ -120,7 +122,7 @@ function generateFeedTitle(feedName: string, criteria: any): string {
   }
 }
 
-function generateFeedDescription(criteria: any): string {
+function generateFeedDescription(criteria: FeedCriteria): string {
   const conditions = [];
   
   if (criteria.seriesName) {
@@ -133,12 +135,13 @@ function generateFeedDescription(criteria: any): string {
     conditions.push(`出版社「${criteria.publisher}」(完全一致)`);
   }
   if (criteria.ccode) {
-    const matchTypeText = {
+    const matchTypeText: Record<string, string> = {
       exact: '完全一致',
       prefix: '前方一致',
       suffix: '後方一致'
-    }[criteria.ccodeMatchType] || '前方一致';
-    conditions.push(`Cコード「${criteria.ccode}」(${matchTypeText})`);
+    };
+    const displayText = matchTypeText[criteria.ccodeMatchType] || '前方一致';
+    conditions.push(`Cコード「${criteria.ccode}」(${displayText})`);
   }
   
   const baseDescription = 'OpenBD APIを使用した新刊書籍情報のRSSフィードです。';
